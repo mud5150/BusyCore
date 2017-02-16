@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics;
+using System.Configuration;
 
 namespace BusyCore
 {
@@ -18,26 +19,7 @@ namespace BusyCore
 				var threadCount = new Int32();
 				if (Int32.TryParse(args[0], out threadCount))
 				{
-					var tasks = new List<Task>();
-
-					var totalStopwatch = new Stopwatch();
-					totalStopwatch.Start();
-
-					for (int i = 0; i < threadCount; i++)
-					{
-						tasks.Add(Task.Factory.StartNew(() =>
-						{
-							Work.DoWork();
-						}));
-					}
-					Task.WaitAll(tasks.ToArray());
-					totalStopwatch.Stop();
-
-					Console.WriteLine(
-						String.Format(
-							"Total elapsed time is {0} seconds", totalStopwatch.Elapsed.TotalSeconds	
-							)
-						);
+					Work.DoWork(threadCount);
 				}
 				else
 				{
@@ -50,14 +32,13 @@ namespace BusyCore
 				Work.DoWork();
 			}
 			
-
-
-			Console.ReadLine();
 		}
 	}
 
 	class Work
 	{
+
+		private static int _ceiling = Convert.ToInt32( ConfigurationManager.AppSettings["PrimeCeiling"]);
 
 		public static void DoWork()
 		{
@@ -68,7 +49,7 @@ namespace BusyCore
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
 
-			long nthPrime = FindPrimeNumber(400000); //400000 takes about 10 seconds on my laptop
+			long nthPrime = FindPrimeNumber(_ceiling); //400000 takes about 10 seconds on my laptop
 
 			stopWatch.Stop();
 			var elapsed = stopWatch.Elapsed;
@@ -76,6 +57,32 @@ namespace BusyCore
 			Console.WriteLine(
 				String.Format(
 					"Thread {0} completed in {1} seconds", Thread.CurrentThread.ManagedThreadId, elapsed.TotalSeconds
+					)
+				);
+		}
+
+		public static void DoWork(int threadCount)
+		{
+			//var threadCount = new Int32();
+			
+			var tasks = new List<Task>();
+
+			var totalStopwatch = new Stopwatch();
+			totalStopwatch.Start();
+
+			for (int i = 0; i < threadCount; i++)
+			{
+				tasks.Add(Task.Factory.StartNew(() =>
+				{
+					Work.DoWork();
+				}));
+			}
+			Task.WaitAll(tasks.ToArray());
+			totalStopwatch.Stop();
+
+			Console.WriteLine(
+				String.Format(
+					"Total elapsed time is {0} seconds", totalStopwatch.Elapsed.TotalSeconds
 					)
 				);
 		}
