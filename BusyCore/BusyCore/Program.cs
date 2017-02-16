@@ -19,6 +19,9 @@ namespace BusyCore
 				var threadCount = new Int32();
 				if (Int32.TryParse(args[0], out threadCount))
 				{
+					Console.WriteLine(
+						String.Format( "Launching with {0} threads", threadCount));
+
 					Work.DoWork(threadCount);
 				}
 				else
@@ -43,8 +46,7 @@ namespace BusyCore
 		public static void DoWork()
 		{
 			Console.WriteLine(
-				String.Format("Doing work on thread {0}", Thread.CurrentThread.ManagedThreadId)
-				);
+				String.Format("Doing work on thread {0}", Thread.CurrentThread.ManagedThreadId));
 
 			var stopWatch = new Stopwatch();
 			stopWatch.Start();
@@ -56,9 +58,7 @@ namespace BusyCore
 
 			Console.WriteLine(
 				String.Format(
-					"Thread {0} completed in {1} seconds", Thread.CurrentThread.ManagedThreadId, elapsed.TotalSeconds
-					)
-				);
+					"Thread {0} completed in {1} seconds", Thread.CurrentThread.ManagedThreadId, elapsed.TotalSeconds));
 		}
 
 		public static void DoWork(int threadCount)
@@ -82,9 +82,7 @@ namespace BusyCore
 
 			Console.WriteLine(
 				String.Format(
-					"Total elapsed time is {0} seconds", totalStopwatch.Elapsed.TotalSeconds
-					)
-				);
+					"Total elapsed time is {0} seconds", totalStopwatch.Elapsed.TotalSeconds));
 		}
 
 		private static long FindPrimeNumber(int n)
